@@ -110,6 +110,7 @@ final boolean showBg = false; // Includes minute markers, which btw have their o
 final boolean showMinuteMarkers = false;
 final boolean whiteTextDefault = true;
 final boolean layerTextDefault = true; // Layer 1, Lyr 1, L1, etc. instead of just 1
+final float gap = 4; // Text padding
 
 // ******************************************************
 // DON'T MODIFY THE STUFF PAST HERE
@@ -188,27 +189,29 @@ void draw() {
     }
     pg.rectMode(CORNER);
     for (Duration d : l.durs) {
+      float hue = hue(l.hue);
+      float sinhue = 2 * pow(sin((hue / (180.0 / PI)) / 2 + PI / 4), 6) - 1;
       String label = l.label;
       float ii = 0.75;
       //float s;
       pg.textSize(layerY(ii));
       if (l.defLabel && layerTextDefault) {
         label = "Layer " + l.label;
-        if (pg.textWidth(label) + 4 > time(d.end) - time(d.start)) { label = "Lyr " + l.label; println("trunclyr"); }
-        if (pg.textWidth(label) + 4 > time(d.end) - time(d.start)) { label = "Lr " + l.label; println("trunclr"); }
-        if (pg.textWidth(label) + 4 > time(d.end) - time(d.start)) { label = "L" + l.label; println("truncl"); }
-        if (pg.textWidth(label) + 4 > time(d.end) - time(d.start)) { label = l.label; println("trunc"); }
+        if (pg.textWidth(label) + gap * 2 > time(d.end) - time(d.start)) { label = "Lyr " + l.label; println("trunclyr"); }
+        if (pg.textWidth(label) + gap * 2 > time(d.end) - time(d.start)) { label = "Lr " + l.label; println("trunclr"); }
+        if (pg.textWidth(label) + gap * 2 > time(d.end) - time(d.start)) { label = "L" + l.label; println("truncl"); }
+        if (pg.textWidth(label) + gap * 2 > time(d.end) - time(d.start)) { label = l.label; println("trunc"); }
       }
-      while (pg.textWidth(label) + 4 > time(d.end) - time(d.start) && ii > 0.05) { ii -= 0.01; pg.textSize(layerY(ii)); }
+      while (pg.textWidth(label) + gap * 2 > time(d.end) - time(d.start) && ii > 0.05) { ii -= 0.01; pg.textSize(layerY(ii)); }
       //s = pg.textWidth(label);
       pg.fill(l.hue);
       pg.rect(time(d.start), layerY(heights[i]), pg.textWidth(label), layerY(heights[i] + 1) - layerY(heights[i]));
       if (whiteTextDefault) {
-        if (brightness(l.hue) > 80 && saturation(l.hue) < 25) { pg.fill(0); } else { pg.fill(255); }
+        if (brightness(l.hue) > -30 * sinhue + 50 && saturation(l.hue) < 25 * sinhue + 50) { pg.fill(0); } else { pg.fill(255); }
       } else {
         if (brightness(l.hue) < 40) { pg.fill(255); } else { pg.fill(0); }
       }
-      pg.text(label, time(d.start) + 2, layerY(heights[i] + 0.5));
+      pg.text(label, time(d.start) + gap, layerY(heights[i] + 0.5));
     }
     println("lyr" + (i + 1));
   }
